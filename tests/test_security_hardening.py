@@ -1,5 +1,4 @@
 import importlib
-import subprocess
 
 import pytest
 

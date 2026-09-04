@@ -90,7 +90,7 @@ def test_pdf_media_rejects_declared_oversize_before_body_read(monkeypatch):
     monkeypatch.setattr(pdf_gen, "PIL_AVAILABLE", True)
     monkeypatch.setattr(pdf_gen.httpx, "get", lambda *args, **kwargs: legacy)
     monkeypatch.setattr(pdf_gen.httpx, "stream", lambda *args, **kwargs: StreamContext(streamed))
-    monkeypatch.setattr(pdf_gen.socket, "getaddrinfo", lambda *args, **kwargs: [(2, 1, 6, "", ("203.0.113.10", 443))], raising=False)
+    monkeypatch.setattr(pdf_gen.socket, "getaddrinfo", lambda *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 443))], raising=False)
 
     assert pdf_gen.fetch_and_resize_image("https://media.example.test/avatar.png") is None
     assert legacy.content_accessed is False

@@ -1,8 +1,16 @@
-# Pattern Syntax Guide
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="pattern-syntax-guide"></a>
+<div align="center">
+
+<strong>Pattern Syntax Guide</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 The pattern system allows you to generate multiple username or email variations from a single compact pattern definition. This is useful for searching variations of a username/email similar to your desire.
 
-## Quick Start
+<a id="quick-start"></a>
+<sub><strong>01 // Quick Start</strong></sub>
 
 Use patterns directly with the `-u` (username) or `-e` (email) flags:
 
@@ -22,9 +30,11 @@ user-scanner -e "user[a-z]{0-1}@example.com"
 
 The `-s` flag (short for `--stop`) limits how many permutations are scanned. By default, only the first 100 are checked.
 
-## Pattern Syntax
+<a id="pattern-syntax"></a>
+<sub><strong>02 // Pattern Syntax</strong></sub>
 
-### Character Sets: `[chars]`
+<a id="character-sets-chars"></a>
+<sub><strong>03 // Character Sets: `[chars]`</strong></sub>
 
 Define a character set using square brackets. Characters between the brackets will each become a separate variation.
 
@@ -47,7 +57,8 @@ site[_.-]         → "site_", "site.", "site-"
 
 **Note**: "-" must be placed at the beginning or at the end of the range to be interpreted as a character.
 
-### Length Control: `[chars]{len}`
+<a id="length-control-charslen"></a>
+<sub><strong>04 // Length Control: `[chars]{len}`</strong></sub>
 
 Specify the length of expansions from a character set.
 
@@ -67,9 +78,11 @@ text[0-1]{1-3}    → "text0", "text1", "text00", "text01", "text10", "text11", 
 - `{n;m}` - exactly n or m characters
 - `{0-n}` - zero to n characters
 
-## Common Use Cases
+<a id="common-use-cases"></a>
+<sub><strong>05 // Common Use Cases</strong></sub>
 
-### Username Variations with Numbers
+<a id="username-variations-with-numbers"></a>
+<sub><strong>06 // Username Variations with Numbers</strong></sub>
 
 ```bash
 user-scanner -u "john[0-9]{0-3}"
@@ -77,7 +90,8 @@ user-scanner -u "john[0-9]{0-3}"
 
 Scans up to 100 variations: `john`, `john0`–`john9`, `john00`–`john99`, `john000`–`john999`
 
-### Multiple Name Parts with Case Variations
+<a id="multiple-name-parts-with-case-variations"></a>
+<sub><strong>07 // Multiple Name Parts with Case Variations</strong></sub>
 
 ```bash
 user-scanner -u "[jJ]ohn[0-9]{0-2}"
@@ -85,7 +99,8 @@ user-scanner -u "[jJ]ohn[0-9]{0-2}"
 
 Scans variations like: `john`, `John`, `john0`–`john99`, `John0`–`John99`
 
-### Underscore and Dot Variations
+<a id="underscore-and-dot-variations"></a>
+<sub><strong>08 // Underscore and Dot Variations</strong></sub>
 
 ```bash
 user-scanner -u "user[_.]name"
@@ -93,7 +108,8 @@ user-scanner -u "user[_.]name"
 
 Scans: `user_name`, `user.name`
 
-### Email with Variations
+<a id="email-with-variations"></a>
+<sub><strong>09 // Email with Variations</strong></sub>
 
 ```bash
 user-scanner -e "user[a-z]{0-1}@example.com"
@@ -101,7 +117,8 @@ user-scanner -e "user[a-z]{0-1}@example.com"
 
 Scans email addresses: `user@example.com`, `usera@example.com`–`userz@example.com`
 
-### Limiting Scan Results
+<a id="limiting-scan-results"></a>
+<sub><strong>10 // Limiting Scan Results</strong></sub>
 
 Use the `-s` or `--stop` flag to limit how many permutations are checked:
 
@@ -116,11 +133,13 @@ The tool will show you how many permutations are available:
 [+] Scanning 10 of 1111 permutations
 ```
 
-### Viewing Available Permutations
+<a id="viewing-available-permutations"></a>
+<sub><strong>11 // Viewing Available Permutations</strong></sub>
 
 The tool automatically shows how many variations were found and scans up to the limit you set.
 
-## Performance Tips
+<a id="performance-tips"></a>
+<sub><strong>12 // Performance Tips</strong></sub>
 
 1. **Start with limits** - Always use `-s` to limit how many permutations you scan:
 
@@ -145,39 +164,46 @@ The tool automatically shows how many variations were found and scans up to the 
    user-scanner -u "test[0-9]{1-2}" --delay 1.0
    ```
 
-## CLI Examples
+<a id="cli-examples"></a>
+<sub><strong>13 // CLI Examples</strong></sub>
 
-### Simple usernames with numbers
+<a id="simple-usernames-with-numbers"></a>
+<sub><strong>14 // Simple usernames with numbers</strong></sub>
 
 ```bash
 user-scanner -u "johnny[0-9]{0-2}"
 ```
 
-### Case variations
+<a id="case-variations"></a>
+<sub><strong>15 // Case variations</strong></sub>
 
 ```bash
 user-scanner -u "[jJ]ohn[0-9]{1-2}"
 ```
 
-### Multiple separators
+<a id="multiple-separators"></a>
+<sub><strong>16 // Multiple separators</strong></sub>
 
 ```bash
 user-scanner -u "john[._-]doe"
 ```
 
-### Complex pattern with limited scans
+<a id="complex-pattern-with-limited-scans"></a>
+<sub><strong>17 // Complex pattern with limited scans</strong></sub>
 
 ```bash
 user-scanner -u "user[a-z]{0-1}[0-9]{0-2}" -s 50
 ```
 
-### Email pattern variations
+<a id="email-pattern-variations"></a>
+<sub><strong>18 // Email pattern variations</strong></sub>
 
 ```bash
 user-scanner -e "[jJ]ohn[_.]doe@example.com"
 ```
 
-### Combining with other flags
+<a id="combining-with-other-flags"></a>
+<sub><strong>19 // Combining with other flags</strong></sub>
 
 ```bash
 # Scan a pattern with verbose output and delay between requests
@@ -187,8 +213,11 @@ user-scanner -u "admin[0-9]{1-2}" -v --delay 0.5 -s 25
 user-scanner -u "user[a-c]" -c social -s 50
 ```
 
-## Pattern Limitations
+<a id="pattern-limitations"></a>
+<sub><strong>20 // Pattern Limitations</strong></sub>
 
 - Do not nest brackets: `[[a-z]]` is invalid
 - Ranges must go from lower to higher ASCII values (e.g., `[z-a]` is invalid)
 - The pattern engine is designed for generating variations, not complex regex-like patterns
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

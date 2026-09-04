@@ -1,4 +1,11 @@
-# Cross-scan
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="cross-scan"></a>
+<div align="center">
+
+<strong>Cross-scan</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 An email scan answers *does an account exist here*. It almost never learns the
 account's **name**, so it can only ever reach the sites that expose an email
@@ -28,7 +35,8 @@ address as already scanned — since that pass ran every module against it.
 
 ---
 
-## Where pivots come from
+<a id="where-pivots-come-from"></a>
+<sub><strong>01 // Where pivots come from</strong></sub>
 
 Two shapes of metadata carry a username:
 
@@ -49,7 +57,8 @@ a handle, and a reserved word is not a person.
 
 ---
 
-## Link classes
+<a id="link-classes"></a>
+<sub><strong>02 // Link classes</strong></sub>
 
 Pivots are classified by how much the source platform vouches for them:
 
@@ -73,7 +82,8 @@ platform's verification handshake for an account they do not control.
 
 ---
 
-## Email classes
+<a id="email-classes"></a>
+<sub><strong>03 // Email classes</strong></sub>
 
 Addresses are classified the same way, by how the source presented them:
 
@@ -112,7 +122,8 @@ handle pivots. A handle is not a link; every email class is an address.
 
 ---
 
-## The sweep, and why hits are not equal
+<a id="the-sweep-and-why-hits-are-not-equal"></a>
+<sub><strong>04 // The sweep, and why hits are not equal</strong></sub>
 
 Two very different things produce a hit:
 
@@ -128,7 +139,8 @@ identification.
 `--cross-sweep 0` turns the sweep off and runs only the named checks. Far fewer
 accounts, zero collisions.
 
-### Usernames and addresses share the budget
+<a id="usernames-and-addresses-share-the-budget"></a>
+<sub><strong>05 // Usernames and addresses share the budget</strong></sub>
 
 `--cross-sweep` counts *targets*, not usernames: sweeping either kind costs one
 full pass over its scan type (227 username modules, 153 email ones). Half the
@@ -148,7 +160,8 @@ an address has no named-site equivalent to fall back on.
 
 ---
 
-## Confidence
+<a id="confidence"></a>
+<sub><strong>06 // Confidence</strong></sub>
 
 Every hit is rated, and the rating is written to `extra.confidence`:
 
@@ -186,7 +199,8 @@ Scoring runs after the pass finishes, because the anchors come from that same
 pass's confirmed hits. Ratings therefore appear in the export and the closing
 summary, not on the per-result lines as they stream past.
 
-### Addresses are rated before they are scanned
+<a id="addresses-are-rated-before-they-are-scanned"></a>
+<sub><strong>07 // Addresses are rated before they are scanned</strong></sub>
 
 An address is rated on how independently it was reported, and the accounts it
 finds inherit that rating — an account is only as well tied to the target as the
@@ -208,7 +222,8 @@ harvested from the very profiles being rated, so consulting them would promote
 every address on the strength of its own appearance. Only domains the target was
 seen to **link** to count.
 
-### What confidence does not do
+<a id="what-confidence-does-not-do"></a>
+<sub><strong>08 // What confidence does not do</strong></sub>
 
 - **A `candidate` is not a negative.** Most hits land there simply because the
   site exposes no metadata to judge — `Roblox`, `Scratch` and `Px500` return a
@@ -219,7 +234,8 @@ seen to **link** to count.
 
 ---
 
-## Scope
+<a id="scope"></a>
+<sub><strong>09 // Scope</strong></sub>
 
 `-m` and `-c` narrow the cross-scan exactly as they narrow the first pass, so a
 restricted run stays restricted:
@@ -239,7 +255,8 @@ sweep to `user_scan/dev/github.py` and any address scan to
 `email_scan/dev/github.py`. Only a restriction that names **neither** a username
 nor an email module leaves nothing to cross-scan, and the run says so.
 
-### Loud modules are skipped, not prompted
+<a id="loud-modules-are-skipped-not-prompted"></a>
+<sub><strong>10 // Loud modules are skipped, not prompted</strong></sub>
 
 23 email modules notify the address they are given — a password reset or a
 verification mail. In a first pass that address is the one you typed, so
@@ -249,7 +266,8 @@ came off somebody else's profile, so those modules are dropped without asking.
 
 ---
 
-## Depth: following a chain of links
+<a id="depth-following-a-chain-of-links"></a>
+<sub><strong>11 // Depth: following a chain of links</strong></sub>
 
 `--cross-depth N` runs N rounds. Each round pivots off the accounts the previous
 one found, so a handle that only appears deep in a chain is still reached:
@@ -282,7 +300,8 @@ Two rules keep extra rounds from wandering:
 
 ---
 
-## Cost
+<a id="cost"></a>
+<sub><strong>12 // Cost</strong></sub>
 
 A sweep runs **every** module of its kind, so each swept username costs roughly
 one full `-u` scan and each scanned address roughly one full `-e` scan.
@@ -305,7 +324,8 @@ drop to `--cross-sweep 0`, when a run is full of them.
 
 ---
 
-## Reading the output
+<a id="reading-the-output"></a>
+<sub><strong>13 // Reading the output</strong></sub>
 
 Cross-scan hits carry `pivot_source` (why the target was scanned) and
 `confidence` (how well the account is tied to the target). An account reached
@@ -344,7 +364,8 @@ pass never did.
 
 ---
 
-## Limits
+<a id="limits"></a>
+<sub><strong>14 // Limits</strong></sub>
 
 - A username pass (`-u` / `-uf`) can be cross-scanned too. Its own target starts
   out marked as swept, since that pass already ran every module against it and
@@ -356,3 +377,5 @@ pass never did.
   neither says the two accounts belong to the same person in every case.
 - Confidence is a triage aid, not a verdict. It reads only the metadata a module
   happened to extract, so it cannot rate a site that exposes none.
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

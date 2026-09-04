@@ -1,7 +1,14 @@
-# User Scanner
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="user-scanner"></a>
+<div align="center">
+
+<strong>User Scanner</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/49ec8d24-665b-4115-8525-01a8d0ca2ef4" alt="User Scanner Logo" width="600" />
+  <img src="https://github.com/user-attachments/assets/49ec8d24-665b-4115-8525-01a8d0ca2ef4" alt="User Scanner Logo" width="100%" />
 </p>
 
 <p align="center">
@@ -30,11 +37,12 @@ With **455+ total scan vectors**—including **175+ email-integrated sites** and
 
 ---
 
-## 💖 Sponsored by
+<a id="sponsored-by"></a>
+<sub><strong>01 // 💖 Sponsored by</strong></sub>
 
 <p align="center">
   <a href="https://webvetted.com/user-scanner?ref=github&utm_source=github" target="_blank">
-    <img width="800" height="250" alt="WebVetted Sponsor Banner" src="https://github.com/user-attachments/assets/a18398f5-193e-4659-87d6-ccdbf6d4d4c2" />
+    <img width="100%" height="250" alt="WebVetted Sponsor Banner" src="https://github.com/user-attachments/assets/a18398f5-193e-4659-87d6-ccdbf6d4d4c2" />
   </a>
   <br>
   <em><strong>Go beyond account enumeration.</strong> WebVetted turns an email or username into a complete identity investigation with deep OSINT enrichment, breach intel, AI analysis, and an interactive identity graph.</em>
@@ -46,7 +54,7 @@ With **455+ total scan vectors**—including **175+ email-integrated sites** and
 
 <p align="center">
   <a href="https://noimosiny.com/" target="_blank">
-    <img width="750" style="max-width: 100%; height: auto;" alt="banner-github" src="https://github.com/user-attachments/assets/05ca5b27-f9b4-4385-b0cf-768fbad05c39" />
+    <img width="100%" style="max-width: 100%; height: auto;" alt="banner-github" src="https://github.com/user-attachments/assets/05ca5b27-f9b4-4385-b0cf-768fbad05c39" />
   </a>
   <br>
   <em><strong>Comprehensive OSINT platform for professional investigators and analysts.</strong> Reverse email, phone number, and username search across 250+ modules. Automate your intelligence gathering with our powerful tools.</em>
@@ -56,7 +64,8 @@ With **455+ total scan vectors**—including **175+ email-integrated sites** and
 
 ---
 
-## ✨ Key Features
+<a id="key-features"></a>
+<sub><strong>02 // ✨ Key Features</strong></sub>
 
 - 🔎 **Deep Email & Username OSINT:** Look up email registrations and perform advanced username profiling across 455+ platforms.
 - 👤 **Rich Metadata Scraping:** Scrapes avatars, bio descriptions, follower counts, UID numbers, seller statuses, and account attributes.
@@ -71,9 +80,11 @@ With **455+ total scan vectors**—including **175+ email-integrated sites** and
 
 ---
 
-## 🚀 Installation
+<a id="installation"></a>
+<sub><strong>03 // 🚀 Installation</strong></sub>
 
-### 🐍 Via PyPI (Recommended)
+<a id="via-pypi-recommended"></a>
+<sub><strong>04 // 🐍 Via PyPI (Recommended)</strong></sub>
 
 ```bash
 # Upgrade pip and install user-scanner
@@ -84,7 +95,8 @@ pip install user-scanner
 pip install "user-scanner[mcp]"
 ```
 
-### 📦 Virtual Environment Setup
+<a id="virtual-environment-setup"></a>
+<sub><strong>05 // 📦 Virtual Environment Setup</strong></sub>
 
 ```bash
 # Create and activate virtual environment
@@ -95,7 +107,8 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\Activate.ps1
 pip install user-scanner
 ```
 
-### ❄️ Via Nix (Linux & macOS)
+<a id="via-nix-linux-macos"></a>
+<sub><strong>06 // ❄️ Via Nix (Linux & macOS)</strong></sub>
 
 ```bash
 # Run instantly without installing permanently
@@ -107,9 +120,11 @@ nix shell github:kaifcodec/user-scanner/main
 
 ---
 
-## 💻 Usage Guide
+<a id="usage-guide"></a>
+<sub><strong>07 // 💻 Usage Guide</strong></sub>
 
-### 1. Basic Username & Email Scanning
+<a id="1-basic-username-email-scanning"></a>
+<sub><strong>08 // 1. Basic Username & Email Scanning</strong></sub>
 
 Scan a single username or email address across all available platform modules:
 
@@ -118,7 +133,8 @@ user-scanner -u johndoe             # Single username scan
 user-scanner -e johndoe@gmail.com   # Single email scan
 ```
 
-### 2. Cross-Scan & Pivot Intelligence
+<a id="2-cross-scan-pivot-intelligence"></a>
+<sub><strong>09 // 2. Cross-Scan & Pivot Intelligence</strong></sub>
 
 An email scan proves an account exists but rarely reveals a handle. `--cross-scan` mines exposed handles, profile links, and secondary email addresses from target profiles, pivoting into multi-pass reconnaissance across all matching platforms:
 
@@ -138,7 +154,8 @@ user-scanner -u johndoe --cross-scan --cross-depth 2        # Follow links two h
 
 > 💡 *For confidence scoring, link classification rules, and cost models, see **[docs/CROSS_SCAN.md](docs/CROSS_SCAN.md)**.*
 
-### 3. Hudson Rock Malware Breach Intelligence
+<a id="3-hudson-rock-malware-breach-intelligence"></a>
+<sub><strong>10 // 3. Hudson Rock Malware Breach Intelligence</strong></sub>
 
 Check if a target username or email address has been exposed in **infostealer malware infection logs**:
 
@@ -149,7 +166,8 @@ user-scanner -e johndoe@gmail.com --hudson   # Email malware log check
 
 > 🖼️ *To view output terminal screenshots and visual previews, see **[docs/EXAMPLES.md](docs/EXAMPLES.md)**.*
 
-### 4. Targeted Category & Module Scanning
+<a id="4-targeted-category-module-scanning"></a>
+<sub><strong>11 // 4. Targeted Category & Module Scanning</strong></sub>
 
 Scan specific categories or individual modules, or list available modules in a responsive grid:
 
@@ -162,7 +180,8 @@ user-scanner -lu                              # List user categories & modules g
 user-scanner -le                              # List email categories & modules grid
 ```
 
-### 5. Bulk File Scanning
+<a id="5-bulk-file-scanning"></a>
+<sub><strong>12 // 5. Bulk File Scanning</strong></sub>
 
 Scan multiple targets from an input file (one target per line):
 
@@ -171,7 +190,8 @@ user-scanner -uf usernames.txt   # Bulk username scan
 user-scanner -ef emails.txt      # Bulk email scan
 ```
 
-### 6. Report Exports, Options & Proxies
+<a id="6-report-exports-options-proxies"></a>
+<sub><strong>13 // 6. Report Exports, Options & Proxies</strong></sub>
 
 ```bash
 # Export results to PDF, JSON, or CSV
@@ -185,11 +205,13 @@ user-scanner -u johndoe -v --all
 user-scanner -u johndoe -P proxies.txt --validate-proxies
 ```
 
-### 7. AI & LLM Agent Integration (MCP Server)
+<a id="7-ai-llm-agent-integration-mcp-server"></a>
+<sub><strong>14 // 7. AI & LLM Agent Integration (MCP Server)</strong></sub>
 
 Connect `user-scanner` directly to AI coding assistants and LLM platforms via the **Model Context Protocol (MCP)**. This enables AI agents (Claude Desktop, Cursor, Antigravity, Open-WebUI) to autonomously investigate handles and emails, pivot on exposed profiles, and analyze digital footprints.
 
-#### Starting the Server
+<a id="starting-the-server"></a>
+<sub><strong>15 // Starting the Server</strong></sub>
 
 ```bash
 # Start the MCP server over standard I/O (stdio)
@@ -199,7 +221,8 @@ user-scanner-mcp
 user-scanner-mcp -v
 ```
 
-#### MCP Client Configuration
+<a id="mcp-client-configuration"></a>
+<sub><strong>16 // MCP Client Configuration</strong></sub>
 
 Add `user-scanner` to your client configuration (e.g. `claude_desktop_config.json` or `mcp_config.json`):
 
@@ -213,7 +236,8 @@ Add `user-scanner` to your client configuration (e.g. `claude_desktop_config.jso
 }
 ```
 
-#### Exposed AI Tools
+<a id="exposed-ai-tools"></a>
+<sub><strong>17 // Exposed AI Tools</strong></sub>
 
 | Tool | Description | Capabilities |
 | :--- | :--- | :--- |
@@ -223,7 +247,8 @@ Add `user-scanner` to your client configuration (e.g. `claude_desktop_config.jso
 
 ---
 
-## 📚 Documentation Hub
+<a id="documentation-hub"></a>
+<sub><strong>18 // 📚 Documentation Hub</strong></sub>
 
 Explore detailed documentation guides in the [`docs/`](docs/) directory:
 
@@ -236,7 +261,8 @@ Explore detailed documentation guides in the [`docs/`](docs/) directory:
 
 ---
 
-## 🐍 Python Library Mode
+<a id="python-library-mode"></a>
+<sub><strong>19 // 🐍 Python Library Mode</strong></sub>
 
 Integrate the User Scanner engine directly into your Python scripts:
 
@@ -257,7 +283,8 @@ asyncio.run(main())
 
 ---
 
-## 💖 Support the Project
+<a id="support-the-project"></a>
+<sub><strong>20 // 💖 Support the Project</strong></sub>
 
 Web platforms constantly update authentication flows. Maintaining over 455+ scan modules requires around-the-clock commitment to keep the suite reliable and free for the cybersecurity community.
 
@@ -265,7 +292,8 @@ If `user-scanner` has saved you hours of manual pivoting or aided your investiga
 
 👉 **[Sponsor on GitHub](https://github.com/sponsors/kaifcodec)**
 
-### Project Sponsors
+<a id="project-sponsors"></a>
+<sub><strong>21 // Project Sponsors</strong></sub>
 
 Huge thanks to our amazing sponsors who support the ongoing development of `user-scanner`!
 
@@ -297,12 +325,16 @@ Huge thanks to our amazing sponsors who support the ongoing development of `user
 
 ---
 
-## 📜 Contributing
+<a id="contributing"></a>
+<sub><strong>22 // 📜 Contributing</strong></sub>
 
 We welcome community contributions! Please read our **[Contributing Guidelines](CONTRIBUTING.md)** before opening a PR or submitting new scan modules.
 
 ---
 
-## ⚠️ Disclaimer
+<a id="disclaimer"></a>
+<sub><strong>23 // ⚠️ Disclaimer</strong></sub>
 
 This tool is provided strictly for **educational purposes**, **authorized security research**, and **defensive OSINT investigations**. The developers assume no liability and are not responsible for any misuse, unintended consequences, or legal actions resulting from the deployment of this software.
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

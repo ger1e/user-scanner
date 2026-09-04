@@ -1,4 +1,11 @@
-## Important Flags
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="important-flags"></a>
+<div align="center">
+
+<strong>Important Flags</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 | Flag                        | Description                                                 |
 | --------------------------- | ----------------------------------------------------------- |
@@ -31,3 +38,5 @@
 | `-o, --output OUTPUT`       | Save results to a file (Can be used directly without `-f`)  |
 | `-U, --update`              | Update the tool to the latest version                       |
 | `--version`                 | Print the current version                                   |
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

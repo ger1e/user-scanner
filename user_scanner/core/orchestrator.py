@@ -1,9 +1,10 @@
 import asyncio
 import inspect
 import concurrent.futures
+from collections import OrderedDict
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, List, Dict, Optional, Set, Union
+from typing import Callable, List, Optional, Set, Union
 import threading
 
 import httpx
@@ -25,12 +26,19 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, MofNCo
 
 
 MAX_CONCURRENT_REQUESTS = 60
+MAX_CACHED_CLIENTS = 32
 _shared_executor = concurrent.futures.ThreadPoolExecutor(max_workers=max(MAX_CONCURRENT_REQUESTS * 2, 250))
+
 
 def set_concurrency(val: int):
     global MAX_CONCURRENT_REQUESTS, _shared_executor
+    if val < 1:
+        raise ValueError("concurrency must be at least 1")
+    previous = _shared_executor
     MAX_CONCURRENT_REQUESTS = val
     _shared_executor = concurrent.futures.ThreadPoolExecutor(max_workers=max(val * 2, 250))
+    previous.shutdown(wait=False, cancel_futures=False)
+
 
 async def _async_worker(
     module: ModuleType,
@@ -88,9 +96,9 @@ async def _run_batch(
 ) -> List[Result]:
     if sem is None:
         sem = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-        
+
     results = []
-    
+
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -114,17 +122,17 @@ async def _run_batch(
 
         for coro in asyncio.as_completed(tasks):
             result = await coro
-            
+
             actual_cat = result.category or "Unknown"
             # Handle specific logic where skipping needs to happen early
             if configs.show_all or result.is_visible(configs):
                 if printed_cats is not None and actual_cat not in printed_cats:
                     print(f"\n{Fore.MAGENTA}== {actual_cat.upper()} SITES =={Style.RESET_ALL}")
                     printed_cats.add(actual_cat)
-                    
+
             result.show(configs)
             results.append(result)
-        
+
     return results
 
 
@@ -162,7 +170,7 @@ async def _run_user_full_async(username: str, configs: ScanConfig) -> List[Resul
     printed_cats = set()
 
     sem = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-    
+
     # 1. Pre-spawn all tasks for all categories (global concurrency)
     category_modules = []
     total_tasks = 0
@@ -182,10 +190,10 @@ async def _run_user_full_async(username: str, configs: ScanConfig) -> List[Resul
         transient=True,
     ) as progress:
         task_id = progress.add_task(f"[cyan]Scanning {username}...", total=total_tasks)
-        
+
         def on_start_cb(site: str):
             progress.update(task_id, description=f"[cyan]Scanning {username}... ({site})")
-            
+
         spawned_category_tasks = []
         for display_name, modules in category_modules:
             tasks = []
@@ -196,24 +204,24 @@ async def _run_user_full_async(username: str, configs: ScanConfig) -> List[Resul
                 t.add_done_callback(lambda t: progress.advance(task_id))
                 tasks.append(t)
             spawned_category_tasks.append((display_name, tasks))
-        
+
         for display_name, tasks in spawned_category_tasks:
             if not tasks:
                 continue
-                
+
             if configs.show_all:
                 print(f"\n{Fore.MAGENTA}== {display_name.upper()} SITES =={Style.RESET_ALL}")
                 printed_cats.add(display_name)
-                
+
             for coro in asyncio.as_completed(tasks):
                 result = await coro
-                
+
                 if configs.show_all or result.is_visible(configs):
                     display_name = result.category or "Unknown"
                     if display_name not in printed_cats:
                         print(f"\n{Fore.MAGENTA}== {display_name.upper()} SITES =={Style.RESET_ALL}")
                         printed_cats.add(display_name)
-                        
+
                 result.show(configs)
                 all_results.append(result)
 
@@ -224,20 +232,27 @@ def run_user_full(username: str, configs: ScanConfig) -> List[Result]:
     return asyncio.run(_run_user_full_async(username, configs))
 
 
-
-
-
-
-_clients: Dict[tuple, httpx.Client] = {}
+_clients: OrderedDict[tuple, httpx.Client] = OrderedDict()
 _clients_lock = threading.Lock()
+
 
 def get_client(use_http2: bool, proxy_val: Optional[str], verify: bool = True) -> httpx.Client:
     key = (use_http2, proxy_val, verify)
-    if key not in _clients:
-        with _clients_lock:
-            if key not in _clients:
-                _clients[key] = httpx.Client(http2=use_http2, proxy=proxy_val, verify=verify)
-    return _clients[key]
+    with _clients_lock:
+        cached = _clients.pop(key, None)
+        if cached is not None:
+            _clients[key] = cached
+            return cached
+
+        client = httpx.Client(http2=use_http2, proxy=proxy_val, verify=verify)
+        _clients[key] = client
+        while len(_clients) > MAX_CACHED_CLIENTS:
+            _, stale = _clients.popitem(last=False)
+            try:
+                stale.close()
+            except Exception:
+                pass
+        return client
 
 
 def make_request(url: str, **kwargs) -> httpx.Response:
@@ -302,7 +317,7 @@ def status_validate(
     url: str, available: int | List[int], taken: int | List[int], **kwargs
 ) -> Result:
     """
-    Function that takes a **url** and **kwargs** for the request and
+    Function that takes a **url** and **kwargs for the request and
     checks if the request status matches the available or taken.
     **Available** and **Taken** must either be whole numbers or lists of whole numbers.
     """

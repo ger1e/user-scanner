@@ -5,6 +5,7 @@ import sys
 from user_scanner.core.version import get_pypi_version, load_local_version
 from user_scanner.utils.update import update_self
 from user_scanner.core.helpers import load_config, save_config_value
+
 # Color configs
 R = Fore.RED
 G = Fore.GREEN
@@ -25,7 +26,7 @@ def check_for_updates():
         if latest_ver is None:
             print(f"[{Y}!{X}] {R}Could not reach PyPI, skipping update check.{X}")
             return
-            
+
         if current_ver != latest_ver:
             print(
                 f"\n[!] New version available: "
@@ -37,9 +38,10 @@ def check_for_updates():
             ).strip().lower()
 
             if choice == "y":
-                update_self()
-                print(f"[{G}+{X}] {G}Update successful. Please restart the tool.{X}")
-                sys.exit(0)
+                if update_self():
+                    print(f"[{G}+{X}] {G}Update successful. Please restart the tool.{X}")
+                    sys.exit(0)
+                print(f"[{Y}!{X}] {R}Update failed. Existing installation was left in place.{X}")
 
             elif choice == "d":
                 save_config_value("auto_update_status", False)

@@ -2,10 +2,13 @@ import concurrent.futures
 import io
 import json
 import html
+import socket
 from datetime import datetime
 from typing import List, Any, Optional
 
 import httpx
+
+from user_scanner.core.safe_media import fetch_media_bytes
 
 try:
     from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, MofNCompleteColumn  # type: ignore[import-untyped,import-not-found]
@@ -37,6 +40,8 @@ except ImportError:
 
 
 IMAGE_HEURISTIC_KEYS = ["avatar", "image", "pfp", "profile_picture", "snapcode"]
+MAX_MEDIA_DIMENSION = 12_000
+MAX_MEDIA_PIXELS = 36_000_000
 
 
 def truncate(val: Any, max_length: int = 300) -> str:
@@ -62,57 +67,70 @@ def clean_metadata(extra: Any) -> List[tuple]:
     return [(k, v) for k, v in extra.items() if not any(x in k.lower() for x in IMAGE_HEURISTIC_KEYS)]
 
 
+def _dimensions_allowed(width: float, height: float) -> bool:
+    if width <= 0 or height <= 0:
+        return False
+    if width > MAX_MEDIA_DIMENSION or height > MAX_MEDIA_DIMENSION:
+        return False
+    return width * height <= MAX_MEDIA_PIXELS
+
+
 def fetch_and_resize_image(url: str, max_size: tuple = (600, 600), timeout: float = 5.0) -> Optional[Any]:
     if not PIL_AVAILABLE:
         return None
+
+    fetched = fetch_media_bytes(
+        url,
+        timeout=timeout,
+        resolver=socket.getaddrinfo,
+        httpx_module=httpx,
+    )
+    if not fetched:
+        return None
+
+    body, content_type, final_url = fetched
     try:
-        resp = httpx.get(
-            url,
-            headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
-            },
-            timeout=timeout,
-            follow_redirects=True,
-        )
-        if resp.status_code == 200:
-            content_type = resp.headers.get("Content-Type", "")
-            if SVGLIB_AVAILABLE and ("svg" in content_type.lower() or url.lower().endswith(".svg")):
-                try:
-                    drawing = svg2rlg(io.BytesIO(resp.content))
-                    if drawing and hasattr(drawing, "width") and hasattr(drawing, "height") and drawing.width > 0 and drawing.height > 0:
-                        s = min(max_size[0] / drawing.width, max_size[1] / drawing.height)
-                        if s < 1.0:
-                            drawing.scale(s, s)
-                            drawing.width = drawing.width * s
-                            drawing.height = drawing.height * s
-                        return drawing
-                except Exception:
-                    pass
+        if SVGLIB_AVAILABLE and ("svg" in content_type or final_url.lower().endswith(".svg")):
+            drawing = svg2rlg(io.BytesIO(body))
+            if (
+                drawing
+                and hasattr(drawing, "width")
+                and hasattr(drawing, "height")
+                and _dimensions_allowed(float(drawing.width), float(drawing.height))
+            ):
+                s = min(max_size[0] / drawing.width, max_size[1] / drawing.height)
+                if s < 1.0:
+                    drawing.scale(s, s)
+                    drawing.width = drawing.width * s
+                    drawing.height = drawing.height * s
+                return drawing
+            return None
 
-            img_raw = PILImage.open(io.BytesIO(resp.content))
-            img = img_raw.convert("RGB")
+        img_raw = PILImage.open(io.BytesIO(body))
+        if not _dimensions_allowed(float(img_raw.width), float(img_raw.height)):
+            return None
+        img = img_raw.convert("RGB")
 
-            # Crop to 1:1 square
-            min_dim = min(img.width, img.height)
-            left = (img.width - min_dim) / 2
-            top = (img.height - min_dim) / 2
-            right = (img.width + min_dim) / 2
-            bottom = (img.height + min_dim) / 2
-            cropped = img.crop((left, top, right, bottom))
+        # Crop to 1:1 square
+        min_dim = min(img.width, img.height)
+        left = (img.width - min_dim) / 2
+        top = (img.height - min_dim) / 2
+        right = (img.width + min_dim) / 2
+        bottom = (img.height + min_dim) / 2
+        cropped = img.crop((left, top, right, bottom))
 
-            # Scale down only if larger than max_size limit (600x600)
-            if cropped.width > max_size[0] or cropped.height > max_size[1]:
-                final_img = cropped.resize(max_size, PILImage.Resampling.LANCZOS)
-            else:
-                final_img = cropped
+        # Scale down only if larger than max_size limit (600x600)
+        if cropped.width > max_size[0] or cropped.height > max_size[1]:
+            final_img = cropped.resize(max_size, PILImage.Resampling.LANCZOS)
+        else:
+            final_img = cropped
 
-            img_byte_arr = io.BytesIO()
-            final_img.save(img_byte_arr, format="JPEG", quality=90)
-            img_byte_arr.seek(0)
-            return img_byte_arr
+        img_byte_arr = io.BytesIO()
+        final_img.save(img_byte_arr, format="JPEG", quality=90)
+        img_byte_arr.seek(0)
+        return img_byte_arr
     except Exception:
-        pass
-    return None
+        return None
 
 
 def download_images_parallel(items: List[tuple]) -> dict:
@@ -317,9 +335,9 @@ def generate_pdf_report(
         for idx, hit in enumerate(hits):
             media = hit.get("media", {})
             extra = hit.get("extra", {})
-            
+
             urls: List[str] = []
-            
+
             if isinstance(media, dict) and media:
                 urls.extend(str(v) for v in media.values() if v)
             elif isinstance(extra, dict) and extra:
@@ -328,10 +346,10 @@ def generate_pdf_report(
                         k_lower = k.lower()
                         if any(x in k_lower for x in IMAGE_HEURISTIC_KEYS):
                             urls.append(v)
-                            
-            for url in urls:
-                if url and isinstance(url, str) and url.startswith("http") and url not in unique_photos:
-                    unique_photos[url] = {
+
+            for media_url in urls:
+                if media_url and isinstance(media_url, str) and media_url.startswith("http") and media_url not in unique_photos:
+                    unique_photos[media_url] = {
                         "site": hit.get("site_name", "Unknown"),
                         "slNo": idx + 1,
                     }
@@ -341,8 +359,8 @@ def generate_pdf_report(
             downloaded_images = download_images_parallel(items)
 
             photo_cells = []
-            for url, info in items:
-                img_io_or_drawing = downloaded_images.get(url)
+            for media_url, info in items:
+                img_io_or_drawing = downloaded_images.get(media_url)
                 if img_io_or_drawing:
                     if isinstance(img_io_or_drawing, io.BytesIO):
                         rl_img = RLImage(img_io_or_drawing, width=60, height=60)

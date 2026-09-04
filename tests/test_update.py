@@ -2,6 +2,7 @@ from user_scanner.core import helpers as hl
 from user_scanner.utils import update as upd
 import subprocess
 
+
 def test_default_config():
     configs = hl.load_config()
     assert "auto_update_status" in configs
@@ -31,19 +32,25 @@ def test_config_set(tmp_path, monkeypatch):
     hl.save_config_value("auto_update_status", True)
     assert get_status() is True
 
+
 def test_update_self_prints_message_on_install_failure(monkeypatch, capsys):
     calls = []
 
     def fake_check_call(cmd, *a, **kw):
         calls.append(cmd)
-        if "uninstall" in cmd:
-            return 0
         raise subprocess.CalledProcessError(1, cmd)
 
     monkeypatch.setattr(subprocess, "check_call", fake_check_call)
 
-    upd.update_self()
+    assert upd.update_self() is False
 
     out = capsys.readouterr().out
     assert "Failed to update user-scanner" in out
-    assert len(calls) == 2  # uninstall attempted, then install attempted
+    assert calls == [[
+        upd.sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+        "user-scanner",
+    ]]

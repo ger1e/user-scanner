@@ -36,9 +36,31 @@ logger = logging.getLogger("user-scanner-mcp")
 # Default concurrency values (must match orchestrator/email_orchestrator defaults)
 _DEFAULT_USER_CONCURRENCY = 60
 _DEFAULT_EMAIL_CONCURRENCY = 25
+_SCAN_LIMITS = {
+    "timeout": (1, 120),
+    "concurrency": (1, 100),
+    "cross_depth": (1, 5),
+    "cross_sweep": (0, 20),
+}
 
 # Serialise scans so concurrent tool calls don't stomp global state
 _scan_lock = asyncio.Lock()
+
+
+def _bounded_int(arguments: dict, field: str, default: int) -> int:
+    value = arguments.get(field, default)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"{field} must be an integer")
+    minimum, maximum = _SCAN_LIMITS[field]
+    if not minimum <= value <= maximum:
+        raise ValueError(f"{field} must be between {minimum} and {maximum}")
+    return value
+
+
+def _optional_bounded_int(arguments: dict, field: str) -> int | None:
+    if field not in arguments or arguments[field] is None:
+        return None
+    return _bounded_int(arguments, field, _SCAN_LIMITS[field][0])
 
 
 async def execute_scan(arguments: dict, is_email: bool) -> list[types.TextContent]:
@@ -53,14 +75,14 @@ async def execute_scan(arguments: dict, is_email: bool) -> list[types.TextConten
     allow_loud = arguments.get("allow_loud", False)
     no_nsfw = arguments.get("no_nsfw", False)
     proxies = arguments.get("proxies")
-    timeout = arguments.get("timeout")
-    concurrency = arguments.get("concurrency")
+    timeout = _optional_bounded_int(arguments, "timeout")
+    concurrency = _optional_bounded_int(arguments, "concurrency")
 
     cross_scan = arguments.get("cross_scan", False)
     cross_links = arguments.get("cross_links", "all")
     cross_emails = arguments.get("cross_emails", "verified")
-    cross_depth = arguments.get("cross_depth", 1)
-    cross_sweep = arguments.get("cross_sweep", 3)
+    cross_depth = _bounded_int(arguments, "cross_depth", 1)
+    cross_sweep = _bounded_int(arguments, "cross_sweep", 3)
 
     if category and module_name:
         raise ValueError("Cannot specify both 'category' and 'module'. Choose one.")
@@ -88,8 +110,8 @@ async def execute_scan(arguments: dict, is_email: bool) -> list[types.TextConten
                 set_global_timeout(None)
 
             if concurrency is not None:
-                set_user_concurrency(int(concurrency))
-                set_email_concurrency(int(concurrency))
+                set_user_concurrency(concurrency)
+                set_email_concurrency(concurrency)
             else:
                 set_user_concurrency(_DEFAULT_USER_CONCURRENCY)
                 set_email_concurrency(_DEFAULT_EMAIL_CONCURRENCY)

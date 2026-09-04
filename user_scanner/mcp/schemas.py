@@ -37,17 +37,21 @@ def get_tool_list() -> list[types.Tool]:
         },
         "cross_depth": {
             "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
             "description": (
                 "How deep the recursive link-following should go. Default: 1. "
-                "Increase for deeper but slower investigations."
+                "Valid range: 1-5."
             ),
         },
         "cross_sweep": {
             "type": "integer",
+            "minimum": 0,
+            "maximum": 20,
             "description": (
                 "How many targets the cross-scan should automatically sweep "
                 "against all modules. Default: 3. Set to 0 to only scan sites "
-                "explicitly named in pivots (prevents handle collisions)."
+                "explicitly named in pivots. Valid range: 0-20."
             ),
         },
     }
@@ -88,7 +92,8 @@ def get_tool_list() -> list[types.Tool]:
         },
         "proxies": {
             "type": "array",
-            "items": {"type": "string"},
+            "items": {"type": "string", "minLength": 1},
+            "maxItems": 50,
             "description": (
                 "An optional list of proxy URLs (e.g. 'http://proxy:port') "
                 "to use for the scan. Recommended to avoid rate limits."
@@ -96,16 +101,18 @@ def get_tool_list() -> list[types.Tool]:
         },
         "timeout": {
             "type": "integer",
+            "minimum": 1,
+            "maximum": 120,
             "description": (
-                "Override default request timeout in seconds. Useful if the "
-                "target sites are slow or you are using slow proxies."
+                "Override default request timeout in seconds. Valid range: 1-120."
             ),
         },
         "concurrency": {
             "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
             "description": (
-                "Override default concurrency limit (how many requests to "
-                "make in parallel)."
+                "Override default concurrency limit. Valid range: 1-100."
             ),
         },
     }

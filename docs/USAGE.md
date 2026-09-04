@@ -1,14 +1,23 @@
-# 🛠 Library Mode Usage Guide
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="library-mode-usage-guide"></a>
+<div align="center">
+
+<strong>🛠 Library Mode Usage Guide</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 User Scanner provides a powerful **Library Mode** via its core engine. This allows you to integrate OSINT capabilities directly into your own Python scripts, returning clean, structured data in JSON or CSV formats.
 
 ---
 
-### Quick Start: Single Module Scan
+<a id="quick-start-single-module-scan"></a>
+<sub><strong>01 // Quick Start: Single Module Scan</strong></sub>
 
 The engine automatically detects whether you are using a module from `email_scan` or `user_scan` by inspecting its path. It then adjusts the result labels (e.g., "Registered" vs "Found") automatically.
 
-### Email Scan Example
+<a id="email-scan-example"></a>
+<sub><strong>02 // Email Scan Example</strong></sub>
 ```python
 import asyncio
 from user_scanner.core import engine
@@ -39,7 +48,8 @@ Output:
 }
 ```
 
-### Username Scan Example
+<a id="username-scan-example"></a>
+<sub><strong>03 // Username Scan Example</strong></sub>
 ```python
 import asyncio
 from user_scanner.core import engine
@@ -77,11 +87,13 @@ Output:
 ```
 ---
 
-### Batch & Category Scans
+<a id="batch-category-scans"></a>
+<sub><strong>04 // Batch & Category Scans</strong></sub>
 
 You can scan entire folders of modules (e.g., all social media, all forums) or perform a full system scan across all categories.
 
-#### Scan a Specific Category
+<a id="scan-a-specific-category"></a>
+<sub><strong>05 // Scan a Specific Category</strong></sub>
 ```python
 import asyncio
 from user_scanner.core import engine
@@ -402,7 +414,8 @@ Output:
 
 ```
 
-#### Full OSINT Scan (All Categories)
+<a id="full-osint-scan-all-categories"></a>
+<sub><strong>06 // Full OSINT Scan (All Categories)</strong></sub>
 ```python
 import asyncio
 from user_scanner.core import engine
@@ -423,7 +436,8 @@ asyncio.run(main())
 
 ---
 
-### Available Output Formats
+<a id="available-output-formats"></a>
+<sub><strong>07 // Available Output Formats</strong></sub>
 
 Every `Result` object returned by the engine supports the following methods:
 
@@ -439,3 +453,5 @@ To format a **List** of results, use the `formatter`:
 - `into_csv(results_list)`
 
 ---
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

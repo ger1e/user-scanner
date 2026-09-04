@@ -1,4 +1,11 @@
-# Contributing to user-scanner
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="contributing-to-user-scanner"></a>
+<div align="center">
+
+<strong>Contributing to user-scanner</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 ---
 
@@ -9,14 +16,16 @@ This project separates two kinds of checks:
 
 ---
 
-## Module naming for both `email_scan` and `user_scan` modules
+<a id="module-naming-for-both-emailscan-and-userscan-modules"></a>
+<sub><strong>01 // Module naming for both `email_scan` and `user_scan` modules</strong></sub>
 
 - File name must be the platform name in lowercase (no spaces or special characters).
   - Examples: `github.py`, `reddit.py`, `x.py`, `pinterest.py`
 
 ---
 
-## Email-scan (email_scan) — guide for contributors
+<a id="email-scan-emailscan-guide-for-contributors"></a>
+<sub><strong>02 // Email-scan (email_scan) — guide for contributors</strong></sub>
 
 Minimal best-practices checklist for email modules
 
@@ -25,7 +34,8 @@ Minimal best-practices checklist for email modules
 - [ ] Use `httpx.AsyncClient` for requests, with sensible timeouts and follow_redirects when needed.
 - [ ] Add a short docstring describing environment variables (api keys), rate limits, and responsible-use note (if required)
 
-### Example: Mastodon async example:
+<a id="example-mastodon-async-example"></a>
+<sub><strong>03 // Example: Mastodon async example:</strong></sub>
 
 ```python name=user_scanner/email_scan/social/mastodon.py
 import httpx
@@ -119,9 +129,11 @@ async def validate_mastodon(email: str) -> Result:
 
 ---
 
-## Username availability check guide:
+<a id="username-availability-check-guide"></a>
+<sub><strong>04 // Username availability check guide:</strong></sub>
 
-### Validator function (user_scan/)
+<a id="validator-function-userscan"></a>
+<sub><strong>05 // Validator function (user_scan/)</strong></sub>
 
 Each module must expose exactly one validator function named:
 
@@ -140,16 +152,19 @@ def validate_<sitename>(user: str) -> Result:
 
 ---
 
-## Orchestrator helpers (user_scan)
+<a id="orchestrator-helpers-userscan"></a>
+<sub><strong>06 // Orchestrator helpers (user_scan)</strong></sub>
 
 To keep validators DRY, the repository provides helper functions in `core/orchestrator.py`.
 
-### 1. generic_validate (Preferred)
+<a id="1-genericvalidate-preferred"></a>
+<sub><strong>07 // 1. generic_validate (Preferred)</strong></sub>
 
 - **Purpose:** Run a request for a given URL and let a callback (`process`) inspect the `httpx.Response` and return a `Result`.
 - **Use case:** Highly recommended for all modern modules to inspect response content, prevent false positives, and parse out deep data.
 
-### Example robust module with deep data extraction:
+<a id="example-robust-module-with-deep-data-extraction"></a>
+<sub><strong>08 // Example robust module with deep data extraction:</strong></sub>
 
 ```python
 from user_scanner.core.orchestrator import generic_validate
@@ -185,7 +200,8 @@ def validate_example(user: str) -> Result:
     return generic_validate(url, process, headers=headers, show_url=show_url, follow_redirects=True)
 ```
 
-### 2. impersonate_validate
+<a id="2-impersonatevalidate"></a>
+<sub><strong>09 // 2. impersonate_validate</strong></sub>
 
 - **Purpose:** Run a request through a cookie-persistent `curl_cffi` session that impersonates a browser TLS fingerprint. Use it for services protected by strict anti-bot walls such as DataDome or Cloudflare, which may reject standard Python HTTP clients even when their headers look like a browser's.
 - **When to use:** Prefer `generic_validate` for ordinary endpoints. Choose `impersonate_validate` when the site is known to inspect the TLS fingerprint or requires browser-like session cookies.
@@ -221,12 +237,14 @@ def validate_example(user: str) -> Result:
 
 For multi-step flows, use `impersonate_request` directly. It returns the raw `curl_cffi` response and reuses the same browser-like session, cookies, proxy, and optional warm-up as `impersonate_validate`.
 
-### 3. status_validate (Discouraged)
+<a id="3-statusvalidate-discouraged"></a>
+<sub><strong>10 // 3. status_validate (Discouraged)</strong></sub>
 
 - **Purpose:** Simple helper for sites where availability can be determined purely from HTTP status codes (e.g., 404 = available, 200 = taken).
 - **Warning:** Use this *only* as a last resort if the site has absolutely no WAF and reliably returns strict HTTP codes without custom redirect/error pages. Modern sites heavily punish this approach.
 
-### 4. URL construction and user input
+<a id="4-url-construction-and-user-input"></a>
+<sub><strong>11 // 4. URL construction and user input</strong></sub>
 
 Never interpolate user-controlled input (`user`, `email`, `target`, etc.) directly
 into a URL string:
@@ -260,7 +278,8 @@ return generic_validate(url, process, show_url=show_url, params={"username": use
 
 ---
 
-## Return values and error handling
+<a id="return-values-and-error-handling"></a>
+<sub><strong>12 // Return values and error handling</strong></sub>
 
 - Always return a Result object:
   - `Result.available()`
@@ -271,7 +290,8 @@ return generic_validate(url, process, show_url=show_url, params={"username": use
 
 ---
 
-## Style & linting
+<a id="style-linting"></a>
+<sub><strong>13 // Style & linting</strong></sub>
 
 - Follow PEP8.
 - Use type hints for validator signatures.
@@ -285,3 +305,5 @@ return generic_validate(url, process, show_url=show_url, params={"username": use
 ---
 
 Thank you for contributing!
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

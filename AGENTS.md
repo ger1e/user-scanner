@@ -1,15 +1,24 @@
-# AI contributor guide
+<!-- GER1E-DOC-SCHEMA: v1 -->
+<a id="ai-contributor-guide"></a>
+<div align="center">
+
+<strong>AI contributor guide</strong><br/>
+<sub>GER1E // USER SCANNER // DOCUMENTATION</sub>
+
+</div>
 
 This file orients an AI assistant (or any new contributor) working in this
 repository. `CLAUDE.md` imports it via `@AGENTS.md` — edit this file only.
 
-## What this project is
+<a id="what-this-project-is"></a>
+<sub><strong>01 // What this project is</strong></sub>
 
 A 2-in-1 OSINT suite for **email** and **username** intelligence. It checks
 whether an account exists on a given platform and, when found, extracts rich
 profile metadata. See `README.md` for the full feature list and install steps.
 
-## Start here (read before writing code)
+<a id="start-here-read-before-writing-code"></a>
+<sub><strong>02 // Start here (read before writing code)</strong></sub>
 
 - `README.md` — overview, features, installation, usage examples.
 - `CONTRIBUTING.md` — the authoritative guide for adding scan modules
@@ -19,7 +28,8 @@ profile metadata. See `README.md` for the full feature list and install steps.
 - `docs/CROSS_SCAN.md` — how `--cross-scan` mines scan metadata for usernames.
 - `docs/PATTERNS.md` — the username/email permutation pattern syntax.
 
-## Repository layout
+<a id="repository-layout"></a>
+<sub><strong>03 // Repository layout</strong></sub>
 
 - `user_scanner/user_scan/<category>/<site>.py` — **username** availability
   modules. Synchronous. Export `def validate_<site>(user: str) -> Result`.
@@ -34,7 +44,8 @@ profile metadata. See `README.md` for the full feature list and install steps.
   live-testing against real and nonexistent handles (see "Before opening a
   PR"), not by mocked unit tests.
 
-## Adding a new module (the short version)
+<a id="adding-a-new-module-the-short-version"></a>
+<sub><strong>04 // Adding a new module (the short version)</strong></sub>
 
 Read `CONTRIBUTING.md` first — it has full examples. The essentials:
 
@@ -59,7 +70,8 @@ Read `CONTRIBUTING.md` first — it has full examples. The essentials:
 7. **Respect the global CLI flags** in any request-making code (timeout `-t`,
    concurrency `-C`, `--allow-loud`) — mirror the existing helpers.
 
-## Retiring a module
+<a id="retiring-a-module"></a>
+<sub><strong>05 // Retiring a module</strong></sub>
 
 Never delete a scan module. When a site shuts down or a module can no longer
 work, **move** the file from `user_scanner/<email_scan|user_scan>/<category>/`
@@ -67,7 +79,8 @@ to `abandoned/<email_scan|user_scan>/<category>/` — same scan type, same
 category, same file name, contents unchanged. This keeps the module out of
 `load_modules()` while preserving it for revival if the site returns.
 
-## Before opening a PR
+<a id="before-opening-a-pr"></a>
+<sub><strong>06 // Before opening a PR</strong></sub>
 
 Local CI gates must pass:
 
@@ -81,7 +94,8 @@ Test live against a **real** handle/email and a **nonexistent** one, across
 every namespace and account type the module checks — this is what catches
 mislabeled types, missed namespaces, and false positives/negatives.
 
-## Recommended tooling
+<a id="recommended-tooling"></a>
+<sub><strong>07 // Recommended tooling</strong></sub>
 
 - If the `ax` CLI (https://ax.yusuke.run) is available, prefer it over
   throwaway scripts for investigating page structure — `--outline`,
@@ -96,9 +110,12 @@ If a task would benefit from one of these tools and it is not installed, ask
 the user once whether they'd like to install it. If they decline, record the
 choice in `tooling.local.md` (git-ignored) and don't ask for that tool again.
 
-## Local files and privacy
+<a id="local-files-and-privacy"></a>
+<sub><strong>08 // Local files and privacy</strong></sub>
 
 - `*.local.*` and `docs/local/` are git-ignored — use them for scratch notes,
   private scan output, and AI working files that must not be committed.
 - `output/` is git-ignored — write scan outputs there (e.g. `-o output/result.json`).
 - Never commit real scan results, targets, credentials, or personal data.
+
+<p align="center"><sub>GER1E // USER SCANNER // MOBILE-SAFE DOCUMENTATION</sub></p>

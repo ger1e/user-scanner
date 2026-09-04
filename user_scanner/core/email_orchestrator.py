@@ -1,5 +1,8 @@
 import asyncio
+import concurrent.futures
+import contextlib
 import httpx
+import threading
 from pathlib import Path
 from types import ModuleType
 from typing import List, Optional, Set, Union, Callable
@@ -20,44 +23,56 @@ from user_scanner.core.helpers import (
 from user_scanner.core.result import Result
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, MofNCompleteColumn
 
-# Monkey-patch httpx clients to automatically use proxies for email scans
-_original_async_client_init = httpx.AsyncClient.__init__
-_original_client_init = httpx.Client.__init__
 
-def _patched_async_client_init(self, *args, **kwargs):
-    if "proxy" not in kwargs and "proxies" not in kwargs:
-        proxy = get_proxy()
-        if proxy:
-            kwargs["proxy"] = proxy
-            
-    global_timeout = get_global_timeout()
-    if global_timeout is not None:
-        kwargs["timeout"] = global_timeout
-        
-    _original_async_client_init(self, *args, **kwargs)
+_httpx_patch_lock = threading.RLock()
 
-def _patched_client_init(self, *args, **kwargs):
-    if "proxy" not in kwargs and "proxies" not in kwargs:
-        proxy = get_proxy()
-        if proxy:
-            kwargs["proxy"] = proxy
-            
-    global_timeout = get_global_timeout()
-    if global_timeout is not None:
-        kwargs["timeout"] = global_timeout
-        
-    _original_client_init(self, *args, **kwargs)
 
-httpx.AsyncClient.__init__ = _patched_async_client_init  # type: ignore[method-assign]
-httpx.Client.__init__ = _patched_client_init  # type: ignore[method-assign]
+@contextlib.contextmanager
+def _httpx_scan_defaults():
+    """Apply proxy/timeout defaults only while an email scan is running."""
+    with _httpx_patch_lock:
+        original_async_client_init = httpx.AsyncClient.__init__
+        original_client_init = httpx.Client.__init__
+
+        def patched_async_client_init(self, *args, **kwargs):
+            if "proxy" not in kwargs and "proxies" not in kwargs:
+                proxy = get_proxy()
+                if proxy:
+                    kwargs["proxy"] = proxy
+            global_timeout = get_global_timeout()
+            if global_timeout is not None and "timeout" not in kwargs:
+                kwargs["timeout"] = global_timeout
+            original_async_client_init(self, *args, **kwargs)
+
+        def patched_client_init(self, *args, **kwargs):
+            if "proxy" not in kwargs and "proxies" not in kwargs:
+                proxy = get_proxy()
+                if proxy:
+                    kwargs["proxy"] = proxy
+            global_timeout = get_global_timeout()
+            if global_timeout is not None and "timeout" not in kwargs:
+                kwargs["timeout"] = global_timeout
+            original_client_init(self, *args, **kwargs)
+
+        httpx.AsyncClient.__init__ = patched_async_client_init  # type: ignore[method-assign]
+        httpx.Client.__init__ = patched_client_init  # type: ignore[method-assign]
+        try:
+            yield
+        finally:
+            httpx.AsyncClient.__init__ = original_async_client_init  # type: ignore[method-assign]
+            httpx.Client.__init__ = original_client_init  # type: ignore[method-assign]
 
 
 # Concurrency control
 MAX_CONCURRENT_REQUESTS = 25
 
+
 def set_concurrency(val: int):
     global MAX_CONCURRENT_REQUESTS
+    if val < 1:
+        raise ValueError("concurrency must be at least 1")
     MAX_CONCURRENT_REQUESTS = val
+
 
 async def _async_worker(
     module: ModuleType,
@@ -115,7 +130,7 @@ async def _run_batch(
 
     sem = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
     results = []
-    
+
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -164,7 +179,6 @@ async def _run_email_module_batch_async(
     module: Union[ModuleType, List[ModuleType]], email: str, configs: ScanConfig
 ) -> List[Result]:
     loop = asyncio.get_running_loop()
-    import concurrent.futures
     loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=250))
     modules = [module] if isinstance(module, ModuleType) else list(module)
     return await _run_batch(modules, email, configs, printed_cats=set())
@@ -173,14 +187,14 @@ async def _run_email_module_batch_async(
 def run_email_module_batch(
     module: Union[ModuleType, List[ModuleType]], email: str, configs: ScanConfig
 ) -> List[Result]:
-    return asyncio.run(_run_email_module_batch_async(module, email, configs))
+    with _httpx_scan_defaults():
+        return asyncio.run(_run_email_module_batch_async(module, email, configs))
 
 
 async def _run_email_category_batch_async(
     category_path: Path, email: str, configs: ScanConfig
 ) -> List[Result]:
     loop = asyncio.get_running_loop()
-    import concurrent.futures
     loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=250))
     cat_name = category_path.stem.capitalize()
     modules = load_modules(category_path)
@@ -197,15 +211,16 @@ async def _run_email_category_batch_async(
         printed_cats=printed_cats,
     )
 
+
 def run_email_category_batch(
     category_path: Path, email: str, configs: ScanConfig
 ) -> List[Result]:
-    return asyncio.run(_run_email_category_batch_async(category_path, email, configs))
+    with _httpx_scan_defaults():
+        return asyncio.run(_run_email_category_batch_async(category_path, email, configs))
 
 
 async def _run_email_full_batch_async(email: str, configs: ScanConfig) -> List[Result]:
     loop = asyncio.get_running_loop()
-    import concurrent.futures
     loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=250))
     categories = load_categories(True, configs.no_nsfw)
     all_results = []
@@ -215,7 +230,7 @@ async def _run_email_full_batch_async(email: str, configs: ScanConfig) -> List[R
     category_modules = []
     total_tasks = 0
     sem = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-    
+
     for cat_name, cat_path in categories.items():
         display_name = cat_name.capitalize()
         modules = load_modules(cat_path)
@@ -232,10 +247,10 @@ async def _run_email_full_batch_async(email: str, configs: ScanConfig) -> List[R
         transient=True,
     ) as progress:
         task_id = progress.add_task(f"[cyan]Scanning {email}...", total=total_tasks)
-        
+
         def on_start_cb(site: str):
             progress.update(task_id, description=f"[cyan]Scanning {email}... ({site})")
-            
+
         spawned_category_tasks = []
         for display_name, modules in category_modules:
             tasks = []
@@ -253,15 +268,15 @@ async def _run_email_full_batch_async(email: str, configs: ScanConfig) -> List[R
                 t.add_done_callback(lambda t: progress.advance(task_id))
                 tasks.append(t)
             spawned_category_tasks.append((display_name, tasks))
-                
+
         for display_name, tasks in spawned_category_tasks:
             if not tasks:
                 continue
-                
+
             if configs.show_all:
                 print(f"\n{Fore.MAGENTA}== {display_name.upper()} SITES =={Style.RESET_ALL}")
                 printed_cats.add(display_name)
-                
+
             for coro in asyncio.as_completed(tasks):
                 result = await coro
                 if configs.show_all or result.is_visible(configs):
@@ -277,5 +292,7 @@ async def _run_email_full_batch_async(email: str, configs: ScanConfig) -> List[R
 
     return all_results
 
+
 def run_email_full_batch(email: str, configs: ScanConfig) -> List[Result]:
-    return asyncio.run(_run_email_full_batch_async(email, configs))
+    with _httpx_scan_defaults():
+        return asyncio.run(_run_email_full_batch_async(email, configs))

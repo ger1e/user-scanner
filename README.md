@@ -31,6 +31,9 @@
 
 ---
 
+> [!NOTE]
+> **GER1E hardening fork.** This repository is derived from [`kaifcodec/user-scanner`](https://github.com/kaifcodec/user-scanner) and carries GER1E-specific security, CI, network-boundary, MCP, and reporting hardening. It intentionally does not track upstream line-for-line, so upstream may have newer scan modules and release numbers. See [FORK.md](FORK.md) for the divergence policy and [SECURITY.md](SECURITY.md) for the security boundary.
+
 A powerful **2-in-1 OSINT suite** engineered for deep **Email and Username Intelligence**.
 
 With **455+ total scan vectors**—including **175+ email-integrated sites** and **280+ username platforms**—you can map digital footprints, analyze target behavior, uncover interests, full metadata of usernames and verify account registrations in seconds.

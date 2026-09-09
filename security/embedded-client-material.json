@@ -1,0 +1,145 @@
+{
+  "schema": "user-scanner/embedded-client-material/v1",
+  "entries": [
+    {
+      "path": "user_scanner/email_scan/creator/flickr.py",
+      "kind": "credential-header-or-field",
+      "sha256": "2c23cabc031a0766eb83a8df6dc473c5fc7339a38f9600cf4d005020b7fb462d",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/entertainment/justwatch.py",
+      "kind": "google-api-key",
+      "sha256": "a4b8023d50fb33d1c963102288166d39c51b51faae6f6c5dd219cf48156b5761",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/fitness/finch.py",
+      "kind": "google-api-key",
+      "sha256": "cfab24dc070fc2cef89aef004d22adb290fca2ed6790212f0d95dadcc64a91bc",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/fitness/sweat.py",
+      "kind": "credential-header-or-field",
+      "sha256": "61cfbc9602093235d48297ad674216322605d9882aeaa420f9e0668fabbf3b1b",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/gaming/crazygames.py",
+      "kind": "google-api-key",
+      "sha256": "1da1bfa6ac6729180379d82465fff8dfaec5bbc86885137ab89c254d6029d485",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/learning/bnrlanguages.py",
+      "kind": "google-api-key",
+      "sha256": "783d141fcd2bd197bbe810446f94100c5f42ee2066f3d59f8a6d9134c4f6d4af",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/learning/bunpo.py",
+      "kind": "google-api-key",
+      "sha256": "1e38dbe7ff20b838c90b8cd450af81c5be536e11e09f750b296d0deb5c691e21",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/music/spotify.py",
+      "kind": "credential-header-or-field",
+      "sha256": "2eaf2a5f6dec16fa26b531e321d57bae6b139ff208020977b9e4a7d759019d20",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/news/aljazeera.py",
+      "kind": "google-api-key",
+      "sha256": "b7fe86159c5056eef236d9c560ea3767b1d12c9d14e98bd6071f4437e4f0b901",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/news/foxnews.py",
+      "kind": "credential-header-or-field",
+      "sha256": "86525b8b3ed77da51ab362616425094a4504476ae945bed3b15f15e4b86f79e6",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/other/secondline.py",
+      "kind": "credential-header-or-field",
+      "sha256": "945c4e013fec580d3ebe9902dcbd5248408f455e7acbe0977847c633c3cbbbaf",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/shopping/fixderma.py",
+      "kind": "credential-header-or-field",
+      "sha256": "5cf0ec600dc1efcfcb6b8f4716e5cfe505376157f319832ed03fa56988e54f6c",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/shopping/hautesauce.py",
+      "kind": "credential-header-or-field",
+      "sha256": "364b3fcb7c79fa29142ae54c70a02604b6a10d137ad8060a53fe76f8df52868f",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/shopping/tatacliq.py",
+      "kind": "credential-header-or-field",
+      "sha256": "2c349eec3ce05389a96ead2edb8af83cbf4ba3311b56723af4d82b65a3f614c5",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/shopping/walmart.py",
+      "kind": "credential-header-or-field",
+      "sha256": "bdce166aa23b2ec593f9297f88bab9fc65ea6939803f3efe8613aeda0953add3",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/social/whering.py",
+      "kind": "google-api-key",
+      "sha256": "e6600c7c62fe5b8fe4061e62350f5ee488c28ce0ce8b5ccfa7f9c6aa46095cb1",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/email_scan/women_health/iyoni.py",
+      "kind": "google-api-key",
+      "sha256": "299e7ebc1deef4f1e3360bf5e261c6785a294269a58a2df2bb21a5cddc700208",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/user_scan/community/disqus.py",
+      "kind": "credential-header-or-field",
+      "sha256": "e3d6ac15a885c2031a7500a5b3ab698b7101c81627c3bd0b068e96750afa14c6",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/user_scan/creator/twitch.py",
+      "kind": "credential-header-or-field",
+      "sha256": "1e458d429c66e76a81604674915ae249f273509bec677cf218927687e6c63979",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    },
+    {
+      "path": "user_scanner/user_scan/dev/devhunt.py",
+      "kind": "named-credential-literal",
+      "sha256": "3377a96ed33f813e56012ba84176ae74464f6ad6bbe5ee94857523b39b2b41f2",
+      "provenance": "inherited-upstream",
+      "review_state": "unverified-client-material"
+    }
+  ]
+}

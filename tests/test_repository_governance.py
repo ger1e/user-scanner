@@ -1,8 +1,12 @@
 import json
 import tempfile
-import tomllib
 import unittest
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - exercised by the Python 3.10 CI job
+    import tomli as tomllib
 
 from scripts.audit_embedded_client_material import (
     MANIFEST_SCHEMA,
@@ -21,6 +25,7 @@ class RepositoryGovernanceTests(unittest.TestCase):
         for requirement in (
             "ruff==0.15.22",
             "mypy==2.3.1",
+            "tomli==2.4.1; python_version < '3.11'",
             "types-colorama==0.4.15.20260508",
         ):
             self.assertIn(requirement, dev)

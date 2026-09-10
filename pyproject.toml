@@ -31,6 +31,7 @@ dev = [
   "anyio[trio]",
   "mypy==2.3.1",
   "ruff==0.15.22",
+  "tomli==2.4.1; python_version < '3.11'",
   "types-colorama==0.4.15.20260508"
 ]
 pdf = ["reportlab>=4.0.0", "pillow>=10.0.0", "svglib>=1.5.0"]

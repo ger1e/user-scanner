@@ -51,8 +51,10 @@ jobs:
       - name: Install linters
         run: |
           python -m pip install --upgrade pip
-          pip install httpx curl_cffi colorama types-colorama rich "mcp>=1.2.0,<2"
-          pip install ruff==0.15.22 mypy
+          pip install ".[dev,mcp]"
+
+      - name: Audit embedded client material
+        run: python scripts/audit_embedded_client_material.py
 
       - name: Run ruff
         run: ruff check .
